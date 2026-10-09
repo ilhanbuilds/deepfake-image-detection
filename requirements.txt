@@ -1,0 +1,10 @@
+# CUDA destekli torch/torchvision kurulumunu önce README'deki komutla yapın.
+torch==2.11.0
+torchvision==0.26.0
+scikit-learn>=1.8,<1.9
+matplotlib>=3.10,<3.11
+Pillow>=12,<13
+pandas>=2.3,<3
+numpy>=2,<3
+pytest>=9,<10
+ruff>=0.15,<0.16
