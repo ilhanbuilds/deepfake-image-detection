@@ -1,8 +1,10 @@
 # Derin Öğrenme ile Deepfake Yüz Görüntülerinin Tespiti
 
 Üniversite Derin Öğrenme dersi için Python/PyTorch projesi. Amaç, bir yüz
-görüntüsünü **REAL** veya **FAKE** olarak sınıflandırmaktır. Bu aşamada yalnızca
-altyapı hazırlanmıştır; gerçek dataset ile eğitim başlatılmamıştır.
+görüntüsünü **REAL** veya **FAKE** olarak sınıflandırmaktır. Proje yalnızca
+**IMAGE / FOTOĞRAF tabanlıdır**; giriş olarak tek yüz fotoğrafı kullanılır.
+Mevcut EfficientNet-B0 modelinin eğitimi ve final internal testi tamamlanmıştır;
+Grad-CAM açıklanabilirlik özelliği hazırdır.
 
 ## Proje yapısı
 
@@ -15,11 +17,14 @@ src/
     train.py              # Açık komutla eğitim veya yalnızca veri kontrolü
     evaluate.py           # Test metrikleri ve confusion matrix
     predict.py            # Tek görüntü tahmini
+    explainability.py     # Grad-CAM açıklanabilirlik
+scripts/
+    generate_gradcam.py    # Tek fotoğraf için Grad-CAM çıktıları
 outputs/
     checkpoints/          # best_model.pth, last.pth, epoch_XXX.pth; Git dışı
-    figures/              # Confusion matrix
+    figures/              # Confusion matrix ve gradcam/ çıktıları
     metrics/              # Test JSON ve eğitim geçmişi CSV
-tests/test_pipeline.py
+tests/                    # Image pipeline, training safety ve Grad-CAM testleri
 requirements.txt
 .gitignore
 ```
@@ -62,6 +67,7 @@ data/raw/
         face001.jpg
     Fake/
         face002.jpg
+    dataset.csv
 ```
 
 Klasör adları **Real** ve **Fake** olmalıdır; sınıf içindeki alt klasörler
@@ -78,7 +84,7 @@ Dosya içeriği değişmezse ayrımlar tekrarlanır; her ayrım iki sınıfı da
 Her görüntü **224×224** boyutuna dönüştürülür ve ImageNet ortalama/standart
 sapmasıyla normalize edilir. Yalnızca eğitimde rastgele yatay çevirme uygulanır.
 
-Dataset geldiğinde önce eğitim yapmadan tüm görüntülerin okunmasını kontrol edin:
+Dataset bütünlüğünü eğitim yapmadan kontrol etmek için:
 
 ```powershell
 .\.venv\Scripts\python.exe -m src.train --check-data
@@ -89,10 +95,10 @@ CSV'nin dosya adları üzerinden yerel etiket eşleşmesini kontrol eder. Eski K
 mutlak CSV yolları dosya okumak için kullanılmaz. Model ağırlığı indirmez,
 checkpoint oluşturmaz. Aynı denetim gerçek eğitimden önce de yapılır.
 
-**Veri sızıntısı:** Aynı kişi/video/kaynak görüntüden türetilmiş kareler veya
+**Veri sızıntısı:** Aynı kişi veya kaynak fotoğraftan türetilmiş görüntüler ve
 kopyalar farklı ayrımlara düşerse sonuç yanıltıcı olabilir. Bilinen augmentation
 aileleri ve tam kopyalar korunur; farklı sıkıştırılmış/renk değiştirilmiş yakın
-kopyalar ile aynı kişi/video otomatik tanınmaz. Augmentation indekslerinin
+kopyalar ile aynı kişi otomatik tanınmaz. Augmentation indekslerinin
 orijinal dosyalarla eşlemesi sağlanmadığından kaynak/kişi düzeyinde tam leakage
 garantisi yoktur. Bu eşleme sağlandığında kaynak grupları genişletilmelidir.
 Checkpoint ayrımlarını ve dataset içeriğinin SHA256 parmak izini saklar;
@@ -100,9 +106,10 @@ resume/değerlendirme içerik değişikliğini reddeder. Dataset'i sabit tutun.
 Kod hazır yüz görüntülerini bekler;
 otomatik yüz tespiti/kırpma yapmaz.
 
-## Eğitim (yalnızca sonraki aşamada)
+## Eğitim ve resume
 
-**Şu anda çalıştırmayın.** Veri kontrolü ve dataset incelemesi bittikten sonra:
+Mevcut eğitim early stopping ile epoch 8’de tamamlandı; en iyi epoch 5’tir.
+Aşağıdaki komut yalnızca kullanıcı açıkça çalıştırdığında eğitim/resume yapar:
 
 ```powershell
 .\.venv\Scripts\python.exe -u -m src.train --run-training --device cuda --batch-size 8 --learning-rate 3e-4 --epochs 10 --patience 3 --workers 0 --seed 42 --resume auto
@@ -117,8 +124,8 @@ uyarlanır; CrossEntropyLoss ve AdamW ile modelin tamamı fine-tune edilir.
 Varsayılanlar: batch size **8**, epoch **10**, learning rate **0.0003**, Windows
 için workers **0**. CUDA'da `torch.amp.autocast` ve `GradScaler` ile mixed
 precision açıktır; CPU'da kapalıdır. `--no-amp` ile devre dışı bırakılabilir.
-Bellek hatasında `--batch-size 4` veya `2` kullanın. GTX 1650 üzerinde gerçek
-eğitim belleği ve süresi henüz ölçülmemiştir; batch 8 başlangıç ayarıdır.
+Bellek hatasında `--batch-size 4` veya `2` kullanın. Mevcut model GTX 1650 4 GB
+üzerinde bu ayarlarla eğitilmiştir. Bellek kullanımı girdilere ve ortama bağlıdır.
 
 En iyi validation **FAKE F1** modeli `outputs/checkpoints/best_model.pth`
 olarak kaydedilir. Her tamamlanan epoch ayrıca `epoch_001.pth` vb. dosyasına
@@ -145,6 +152,35 @@ Tekrarlanabilir resume `workers=0` gerektirir. Yeni deney için
 Resume/AMP yaklaşımı [resmi PyTorch checkpoint](https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html)
 ve [AMP](https://docs.pytorch.org/tutorials/recipes/amp_recipe.html) belgeleriyle uyumludur.
 
+## Mevcut model ve final internal test sonuçları
+
+EfficientNet-B0, ImageNet pretrained ağırlıklarından fine-tune edilmiştir.
+Girdi 224×224 RGB görüntü; çıktı REAL / FAKE sınıflandırmasıdır.
+Eğitim NVIDIA GTX 1650 4 GB üzerinde yapılmıştır. Best epoch **5**;
+early stopping epoch **8**'de eğitimi durdurmuştur.
+
+| Metrik | Sonuç |
+|---|---:|
+| Internal test accuracy | %95.45 |
+| Precision (FAKE) | %98.00 |
+| Recall (FAKE) | %93.52 |
+| F1 (FAKE) | %95.71 |
+| ROC-AUC | 0.99186 |
+
+Final test 1.934 görüntü içerir: 884 REAL, 1.050 FAKE. Confusion matrix,
+satırlar gerçek / sütunlar tahmin ve sıra REAL, FAKE: `[[864, 20], [68, 982]]`.
+Test ayrımı model seçimi veya tuning için kullanılmamıştır. Sonuçlar bu
+fotoğraf datasetinin internal testine aittir; farklı fotoğraf kaynaklarına
+aynı başarıyla genelleme garantisi vermez.
+
+Korunan model ve sonuçlar:
+
+- `outputs/checkpoints/best_model.pth`
+- `outputs/metrics/final_test_metrics.json`
+- `outputs/metrics/history.csv` ve `dataset_audit.json`
+- `outputs/figures/final_test_metrics_confusion_matrix.png`
+- `outputs/figures/gradcam/`
+
 ## Değerlendirme ve tahmin (eğitilmiş checkpoint gerekir)
 
 ```powershell
@@ -152,19 +188,51 @@ ve [AMP](https://docs.pytorch.org/tutorials/recipes/amp_recipe.html) belgeleriyl
 .\.venv\Scripts\python.exe -m src.predict path/to/face.jpg --checkpoint outputs/checkpoints/best_model.pth
 ```
 
-Accuracy, precision, recall ve F1 hesaplanır; precision/recall/F1 için pozitif
+Accuracy, precision, recall, F1 ve ROC-AUC hesaplanır; precision/recall/F1 için pozitif
 sınıf **FAKE**'tir. Confusion matrix satırları gerçek, sütunları tahmin;
 sıra **REAL, FAKE**. Sonuçlar `outputs/metrics/test.json` ve
 `outputs/figures/test_confusion_matrix.png` dosyalarına yazılır. Tahmin çıktısı
 etiket ve softmax olasılıklarıdır; olasılıklar kesin doğruluk garantisi değildir.
 
+## Grad-CAM açıklanabilirlik (eğitim yapmaz)
+
+`best_model.pth` ile tek yüz görüntüsünün tahmin edilen sınıfı açıklanır:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/generate_gradcam.py --image data/raw/Real/00000.jpg
+```
+
+Aktif `.venv` ortamında `python scripts/generate_gradcam.py --image <image_path>`
+komutu da kullanılabilir. Varsayılan checkpoint `outputs/checkpoints/best_model.pth`;
+`--checkpoint`, `--output-dir` ve `--device auto|cpu|cuda` seçenekleri desteklenir.
+EfficientNet özellik çıkarıcısının son `Conv2d` katmanı otomatik seçilir;
+sınıflandırıcı kanal uyumu ve uzamsal çıktı doğrulanır. Seçilen katman konsola
+ve JSON'a yazılır. Yeni dependency kullanılmaz.
+
+Her çalıştırma `outputs/figures/gradcam/` altında ayrı bir dizin oluşturur:
+
+- `original.png`: EXIF yönü düzeltilmiş RGB orijinal, kendi çözünürlüğünde.
+- `heatmap.png`: Grad-CAM haritası; kırmızı yüksek, mavi düşük katkıyı gösterir.
+- `overlay.png`: Haritanın orijinale %40 yoğunlukla bindirilmiş hali.
+- `comparison.png`: Üç görüntü, REAL/FAKE tahmini ve confidence yüzdesi.
+- `prediction.json`: Olasılıklar, açıklanan sınıf, katman, best epoch ve çıktı yolları.
+
+Confidence, tahmin edilen sınıfın softmax olasılığıdır; kalibre edilmiş doğruluk
+ölçüsü değildir. [Grad-CAM](https://arxiv.org/abs/1610.02391), tahmin edilen sınıfın
+logit gradyanlarından kaba bir uzamsal katkı haritası çıkarır; manipülasyon
+piksellerini kesin olarak işaretleyen bir segmentasyon maskesi üretmez.
+Pozitif uzamsal sinyal yoksa sıfır harita ve `heatmap_empty: true` kaydedilir.
+Gradyan hesabı açıklama içindir; optimizer adımı, yeniden eğitim, model seçimi
+veya test metriklerinin yeniden hesaplanması yapılmaz. Model ağırlıkları,
+buffer'lar, mevcut `.grad` alanları ve train/eval durumları korunur; hook kaldırılır.
+
 ## Test ve kod kontrolü
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe -m ruff check src tests
-.\.venv\Scripts\python.exe -m ruff format --check src tests
-.\.venv\Scripts\python.exe -m compileall -q src tests
+.\.venv\Scripts\python.exe -m ruff check src scripts tests
+.\.venv\Scripts\python.exe -m ruff format --check src scripts tests
+.\.venv\Scripts\python.exe -m compileall -q src scripts tests
 .\.venv\Scripts\python.exe -m pip check
 ```
 

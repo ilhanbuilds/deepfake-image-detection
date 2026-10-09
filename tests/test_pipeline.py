@@ -147,6 +147,20 @@ def test_empty_metrics_rejected():
         calculate_metrics([], [])
 
 
+def test_roc_auc_uses_fake_probabilities():
+    metrics = calculate_metrics([0, 0, 1, 1], [0, 0, 0, 1], [0.1, 0.4, 0.35, 0.8])
+    assert metrics["roc_auc"] == pytest.approx(0.75)
+
+
+def test_roc_auc_undefined_for_single_class():
+    assert calculate_metrics([0, 0], [0, 1], [0.2, 0.8])["roc_auc"] is None
+
+
+def test_invalid_roc_scores_rejected():
+    with pytest.raises(ValueError, match="olasılıkları"):
+        calculate_metrics([0, 1], [0, 1], [0.2, float("nan")])
+
+
 def test_seed_reproducibility():
     seed_everything()
     first = torch.rand(4)
