@@ -1,0 +1,3 @@
+# Yalnız video decoder ve tek yüz crop pipeline için ek bağımlılık.
+-r requirements.txt
+opencv-python-headless>=4.13,<4.14

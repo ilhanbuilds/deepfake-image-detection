@@ -1,0 +1,13 @@
+[server]
+address = "127.0.0.1"
+headless = true
+fileWatcherType = "none"
+maxUploadSize = 10
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "light"
+primaryColor = "#2563eb"
+font = "sans-serif"

@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from matplotlib import colormaps
-from PIL import Image
+from PIL import Image, ImageOps
 from torch import nn
 from torch.nn import functional as F
 from torchvision.models.efficientnet import EfficientNet
@@ -29,6 +29,8 @@ class GradCAMResult:
     target_layer: str
     original: Image.Image
     heatmap: np.ndarray
+    activation_shape: tuple[int, int] | None = None
+    target_score: float | None = None
 
 
 def select_target_layer(model: nn.Module) -> tuple[str, nn.Conv2d]:
@@ -56,11 +58,37 @@ def select_target_layer(model: nn.Module) -> tuple[str, nn.Conv2d]:
 
 
 def generate_gradcam(
-    model: nn.Module, image_path: str | Path, device: torch.device
+    model: nn.Module,
+    image_path: str | Path,
+    device: torch.device,
+    target_layer: str | None = None,
+) -> GradCAMResult:
+    """Dosyadan okunan görüntüyü ortak CLEAN Grad-CAM pipeline'ına iletir."""
+    return generate_gradcam_from_image(
+        model, read_image(image_path), device, target_layer
+    )
+
+
+def generate_gradcam_from_image(
+    model: nn.Module,
+    image: Image.Image,
+    device: torch.device,
+    target_layer: str | None = None,
 ) -> GradCAMResult:
     """Logit gradyanlarını kullanır; parametre .grad alanlarını veya model durumunu değiştirmez."""
-    original = read_image(image_path)
+    original = ImageOps.exif_transpose(image).convert("RGB")
     layer_name, layer = select_target_layer(model)
+    if target_layer is not None:
+        candidates = {
+            f"features.{name}": module
+            for name, module in model.features.named_modules()
+            if isinstance(module, nn.Conv2d)
+        }
+        if target_layer not in candidates:
+            raise ValueError(
+                "Target layer EfficientNet features içindeki Conv2d olmalı."
+            )
+        layer_name, layer = target_layer, candidates[target_layer]
     modes = {module: module.training for module in model.modules()}
     activation: torch.Tensor | None = None
 
@@ -131,12 +159,21 @@ def generate_gradcam(
             target_layer=layer_name,
             original=original,
             heatmap=heatmap,
+            activation_shape=tuple(activation.shape[-2:]),
+            target_score=float(logits[0, class_index].detach().item()),
         )
     finally:
         handle.remove()
         activation = None
         for module, mode in modes.items():
             module.training = mode
+
+
+def gradcam_images(result: GradCAMResult) -> tuple[Image.Image, Image.Image]:
+    """Dosya çıktısı ve demo için aynı renk haritasını/bindirmeyi üretir."""
+    colored = np.round(colormaps["jet"](result.heatmap)[..., :3] * 255).astype(np.uint8)
+    heatmap_image = Image.fromarray(colored)
+    return heatmap_image, Image.blend(result.original, heatmap_image, alpha=0.4)
 
 
 def save_gradcam(
@@ -151,9 +188,7 @@ def save_gradcam(
     output_dir.mkdir(parents=True, exist_ok=True)
     stem = re.sub(r"[^A-Za-z0-9_-]", "_", Path(image_path).stem)[:60] or "image"
     run_dir = Path(tempfile.mkdtemp(prefix=f"gradcam_{stem}_", dir=output_dir))
-    colored = np.round(colormaps["jet"](result.heatmap)[..., :3] * 255).astype(np.uint8)
-    heatmap_image = Image.fromarray(colored)
-    overlay = Image.blend(result.original, heatmap_image, alpha=0.4)
+    heatmap_image, overlay = gradcam_images(result)
     paths = {
         name: run_dir / f"{name}.png"
         for name in ("original", "heatmap", "overlay", "comparison")
@@ -183,6 +218,9 @@ def save_gradcam(
         "probabilities": result.probabilities,
         "explained_class": result.label,
         "target_layer": result.target_layer,
+        "activation_shape": result.activation_shape,
+        "target_kind": "class_logit_before_softmax",
+        "target_score": result.target_score,
         "best_epoch": best_epoch,
         "image": str(Path(image_path).resolve()),
         "checkpoint": str(Path(checkpoint_path).resolve()),

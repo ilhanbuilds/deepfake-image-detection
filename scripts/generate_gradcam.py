@@ -1,4 +1,4 @@
-"""best_model.pth ile tek görüntü açıklaması üretir; eğitim başlatmaz."""
+"""Ana V3 model ile tek görüntü açıklaması üretir; eğitim başlatmaz."""
 
 import argparse
 import json
@@ -16,10 +16,10 @@ def main() -> None:
     parser.add_argument(
         "--checkpoint",
         type=Path,
-        default=PROJECT_ROOT / "outputs/checkpoints/best_model.pth",
+        default=PROJECT_ROOT / "outputs/checkpoints/best_model_v3_robust.pth",
     )
     parser.add_argument(
-        "--output-dir", type=Path, default=PROJECT_ROOT / "outputs/figures/gradcam"
+        "--output-dir", type=Path, default=PROJECT_ROOT / "outputs/figures/gradcam_v3"
     )
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     args = parser.parse_args()

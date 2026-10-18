@@ -1,4 +1,14 @@
 .venv/
+venv/
+env/
+.env/
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.streamlit/secrets.toml
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -19,3 +29,5 @@ outputs/**
 .env
 .idea/
 .vscode/
+# Deney günlüğünün üretilmiş PDF kopyası; güncel kaynak Markdown'dır.
+docs/EXPERIMENTS.pdf

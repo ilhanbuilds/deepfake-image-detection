@@ -6,5 +6,6 @@ matplotlib>=3.10,<3.11
 Pillow>=12,<13
 pandas>=2.3,<3
 numpy>=2,<3
+streamlit>=1.65,<1.66
 pytest>=9,<10
 ruff>=0.15,<0.16

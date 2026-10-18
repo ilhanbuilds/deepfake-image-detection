@@ -1,0 +1,18 @@
+# SBI iç içe kare sayısı karşılaştırma protokolü
+
+14 Ekim 2026. Bu protokol ek karelerin sonuçları görülmeden yazıldı; aynı validation'ın daha önce kullanılmış olması nedeniyle bağımsız ön kayıt veya yeni holdout sayılmaz.
+
+- Yalnızca mevcut kabul edilmiş validation cohort'u: 602 video, 106 REAL ve 496 FAKE. Eski değerlendirmeye dahil olmayan dört video yeni deneye sonradan eklenmez; mevcut 602 videodan da çıkarma yapılmaz. Resmî test ve quarantine video içerikleri açılmaz.
+- Checkpoint: değişmemiş resmî SBI FF-raw, SHA-256 `e477fc1789f8c1d2147cffe86a47eb37a24adedae10b106b7d47c1eeb73777e2`. Eğitim, fine-tuning ve threshold tuning yoktur.
+- Mevcut RetinaFace, resmî crop kodu, 380×380 RGB/255, FP32, sınıflandırıcı batch=1, kare başına maksimum korunmuş yüz olasılığı, video başına aritmetik ortalama ve 0.5 karar eşiği korunur.
+- Tarihsel altı indeks `linspace(...).round()` ile doğrulanır. 12, 24 ve 32'ye geçişte en geniş mevcut zaman aralığının aşağı yuvarlanmış orta noktası eklenir. Eşit genişlikte erken aralık tercih edilir. İndeksler benzersiz ve iç içedir. Kısa videoda mevcut benzersiz kare sayısıyla yetinilir; eksik sayı açıkça raporlanır.
+- Önce tüm cohort'un altı karesi yeniden decode/detect/classify edilir. Eski bbox ve crop piksel hash'leri eşit olmalı; yüz olasılıklarındaki maksimum mutlak fark 1e-6'yı aşmamalı, toplam metrikler eski sonuçla eşit olmalıdır. Fark varsa genişletme durur ve açıklanmadan karşılaştırma yapılmaz.
+- Pilot: üç kaynak klasörünün her birinden SHA-256(path) sırasına göre dokuz video, toplam 27. Skora/hata durumuna göre seçim yapılmaz. Bu seçim kaynakları kapsar, tam cohort sınıf oranını taklit etmez.
+- Pilot sonrası kalan videoların ek 26 karesi hesaplanır. Ortak kare skorları tüm bütçelerde paylaşılır. Pilot skorları tam deneyde yeniden hesaplanmaz. Ayrı JSON cache video başına atomik yazılır; kesintide tamamlanmamış video yeniden işlenebilir.
+- Yüzsüz/decode edilemeyen kareler görünür hata kaydıdır. Aynı kare tekrar sayılmaz; başka video veya kareyle doldurulmaz. Geçerli yüzlü kare sayısı üçten küçükse video reddi kapsamda açıkça tutulur; tam eşleştirilmiş analiz sessizce daraltılmaz.
+- Birincil sıralama ölçütü ROC-AUC; Macro-F1, REAL/FAKE recall, confusion matrix ve kaynak AUC/recall değerleri birlikte yorumlanır. Tek metrikte küçük artış genel üstünlük sayılmaz. En yüksek ölçülen başarı ve en uygun hız/başarı dengesi ayrı önerilir.
+- Süre: her frame için senkronize GPU işlem süresi ölçülür. Tüm koşullar aynı son kareye ulaştığı için bir ortak sıralı decode süresi + ilgili seçili karelerin işlem süreleri bütçeye atfedilir. Bu, dört ayrı bağımsız uçtan uca süre ölçümü değildir. Baseline ve genişletme için gereken gerçek iki geçişin toplamı ayrıca raporlanır. Model yükleme, bütünlük kontrolü ve JSON IO tablodaki atfedilen süreye dahil değildir.
+- CUDA allocated/reserved tepe belleği frame bazında ölçülür ve koşuldaki en yüksek değer alınır. Ortak allocator geçmişi nedeniyle özellikle reserved değerleri izole koşul benchmark'ı değildir.
+- Eşleştirilmiş belirsizlik: bilinen dosya-adı ailelerini cluster olarak örnekleyen 1.000 bootstrap çekilişi, 42/123/2026 tohumları. 6→12, 6→24, 6→32, 12→24 ve 24→32 için ΔAUC/ΔMacro-F1 %95 yüzdelik aralıkları. Bu, tekrar kullanılan validation üzerindeki seçim yanlılığını veya çoklu karşılaştırmayı düzeltmez.
+- Adaptif yaklaşım yalnızca tanısal incelenir. Önceden sabit altı-kare marj aralıkları: [0,.05), [.05,.10), [.10,.20), [.20,.50]. Her aralıktaki düzelme ve bozulmalar sayılır; politika/eşik optimize edilmez, ana sisteme adaptif karar eklenmez.
+- Yeni dependency, eski cache/sonuç değişikliği, commit veya push yoktur. Sonuçlar `outputs/video_frames_v1` altında tutulur.
