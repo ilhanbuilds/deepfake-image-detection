@@ -1,0 +1,134 @@
+{
+  "tablo_02_v1_v2_v3": {
+    "sources": [
+      "outputs/metrics/final_test_metrics.json",
+      "outputs/metrics/final_test_metrics_v2.json",
+      "outputs/metrics/final_test_metrics_v3.json"
+    ],
+    "note": "V1 farklı veri/split kullanır; tek ortak benchmark sıralaması yapılamaz.",
+    "files": {
+      "tablo_02_v1_v2_v3.png": "5072abb1f3dc36b8de950e4b5d77244cc97a82cdf86f13fa4f09e9c95f865ca3",
+      "tablo_02_v1_v2_v3.svg": "a372ce57a98708d2854d559424d4fd66eab8526f9afa7b6f69fc350366bf9382"
+    }
+  },
+  "tablo_04_robustness": {
+    "sources": [
+      "outputs/metrics/robustness_v2.json",
+      "outputs/metrics/robustness_v3.json"
+    ],
+    "note": "Aynı tarihsel test üzerinde bozulma koşullarıdır; salt augmentation etkisini izole eden ablation değildir.",
+    "files": {
+      "tablo_04_robustness.png": "90beb53ab80661808419f0a0799f8476f0d0849d24105092640099e147df3b6b",
+      "tablo_04_robustness.svg": "ccaae74760ffa1960b637ed3e015dd9951a3b28fc15cc442f546fc47d2a54ea8"
+    }
+  },
+  "tablo_06_video": {
+    "sources": [
+      "outputs/video_holdout_v1/final_test_20261018/final_results.json"
+    ],
+    "note": "n=518; 178 REAL, 340 FAKE; eşik 0,5. Sabit12 ve adaptif aynı sayıda doğru karara rağmen farklı hatalar yapar.",
+    "files": {
+      "tablo_06_video.png": "c56fc0f083ea0ac519078d7a3ca868d6764c7a96eea0fec30a9b19b06bf789d3",
+      "tablo_06_video.svg": "af86ff84d9034d283be214fcea22c9268ce74cd327e0c3ee13505c76995e2ee5"
+    }
+  },
+  "01_v3_cm": {
+    "sources": [
+      "outputs/metrics/final_test_metrics_v3.json"
+    ],
+    "note": "Satırlar gerçek, sütunlar tahmin. Karar eşiği 0,5.",
+    "files": {
+      "01_v3_cm.png": "712326a8ec47580f592545903bfbdaf83f4e56986d1b0eb88007a50530c5a078",
+      "01_v3_cm.svg": "30a343ff3388d6f12f9523978772758d44e0efbc7034df89e9b5d8c94a3e4b96"
+    }
+  },
+  "02_sbi_cm": {
+    "sources": [
+      "outputs/video_holdout_v1/final_test_20261018/final_results.json"
+    ],
+    "note": "Satırlar gerçek, sütunlar tahmin. Karar eşiği 0,5.",
+    "files": {
+      "02_sbi_cm.png": "a72daf7de45e8f87a60459dbccc0ec87d6dbc9b9d5d4a45fe6a44d2e38d386f9",
+      "02_sbi_cm.svg": "c745f59cd06eb0a7e789abd0c67ef701cd69364c98a7a650b529e48d9a7233cf"
+    }
+  },
+  "03_robustness": {
+    "sources": [
+      "outputs/metrics/robustness_v2.json",
+      "outputs/metrics/robustness_v3.json"
+    ],
+    "note": "Tekrar eğitim/nihai test çalıştırılmadan kayıtlı metriklerden çizildi.",
+    "files": {
+      "03_robustness.png": "2049ce1a304bca05227120a6c2da5eca06b2ee2394bedb0b5ce452ae3c7b58cd",
+      "03_robustness.svg": "7a1d1b98b35cca53c4281373e2007bf5be8aed86d9523789f16a44614e1ff1e7"
+    }
+  },
+  "04_video_strateji": {
+    "sources": [
+      "outputs/video_holdout_v1/final_test_20261018/final_results.json"
+    ],
+    "note": "%48,07 kare azalması uçtan uca hızlanma ölçümü değildir.",
+    "files": {
+      "04_video_strateji.png": "c0e38df3657ba7fb389eed24d74d700d44f12305acc71a824d19189444a05d81",
+      "04_video_strateji.svg": "66eafcc2d74ee582c3ac4b222b41a91941e39ea704ef7a97bad638b6d6a3084e"
+    }
+  },
+  "05_adaptif_akis": {
+    "sources": [
+      "src/video_adaptive.py",
+      "docs/VIDEO_HOLDOUT_RESULTS.md"
+    ],
+    "note": "Katı belirsizlik aralığı, sabit eşik; yetersiz geçerli kare REAL kabul edilmez. Kısa videolarda bütçe kısmi olabilir.",
+    "files": {
+      "05_adaptif_akis.png": "f2a7d9510557a22bc85d849c486e63488547bdf0f6c6088c78a0f3efec660862",
+      "05_adaptif_akis.svg": "f8e2cdbf22aa21a03b7f5861ccd01ea1e9e98a392e42eaee211589683c105f05"
+    }
+  },
+  "06_mimari": {
+    "sources": [
+      "scripts/demo_worker.py",
+      "src/studio_server.py"
+    ],
+    "note": "Ayrı worker süreçleri, GPU erişim kilidi ve yerel 127.0.0.1 backend. Skor birleştirme yapılmaz.",
+    "files": {
+      "06_mimari.png": "6347a5bf594bbb0d88b0dfa7f3e0a1e56e78dd0e2709ce99a2edcc418d55e2ac",
+      "06_mimari.svg": "b4149fd212ca3bcb5b0922640eae832d67e84fb2f0128624988a60b482f8a90f"
+    }
+  },
+  "07_gradcam": {
+    "sources": [
+      "outputs/figures/final/gradcam_real_01_26663.png"
+    ],
+    "note": "Kayıtlı gerçek Grad-CAM karşılaştırması; maske/kanıt veya kalibre edilmiş güven değildir.",
+    "files": {
+      "07_gradcam.png": "6a6908d9b0a7cc030ed319e4f7ce83269756eca85bca972cbf32cfa03cf14030"
+    }
+  },
+  "08_studio_ana": {
+    "sources": [
+      "outputs/desktop_studio_v1/01_empty.png"
+    ],
+    "note": "Yeni Studio yerel arayüzünün kayıtlı Chromium görünümü; fiziksel pencere/DPI kabul testi değildir.",
+    "files": {
+      "08_studio_ana.png": "28b3dc5f4218ca7e8a9c8784ad15109ef76a05705de8e2608abef5af7aa7eed9"
+    }
+  },
+  "09_studio_fotograf": {
+    "sources": [
+      "outputs/desktop_studio_v1/03_photo_result.png"
+    ],
+    "note": "Kayıtlı gerçek fotoğraf sonucu; tek geliştirme örneği.",
+    "files": {
+      "09_studio_fotograf.png": "747aa9263819611b5d1c3b23e0b63e0a9e9e26b33410468dc8c0d3ebaa07c56c"
+    }
+  },
+  "10_studio_video": {
+    "sources": [
+      "outputs/desktop_studio_v1/06_video_result.png"
+    ],
+    "note": "Kayıtlı gerçek geliştirme videosu sonucu; nihai test tekrarı değildir.",
+    "files": {
+      "10_studio_video.png": "fb41ee74de77e048664793606b7d18712194171bb9da9ef36f78ff1327d1eb54"
+    }
+  }
+}

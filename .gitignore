@@ -1,4 +1,6 @@
 .venv/
+.desktop-venv/
+*.lnk
 venv/
 env/
 .env/
@@ -29,5 +31,7 @@ outputs/**
 .env
 .idea/
 .vscode/
-# Deney günlüğünün üretilmiş PDF kopyası; güncel kaynak Markdown'dır.
-docs/EXPERIMENTS.pdf
+# Generated document exports; Markdown and scientific records are authoritative.
+docs/*.pdf
+*.log
+*.tmp

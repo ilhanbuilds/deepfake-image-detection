@@ -1,0 +1,9 @@
+﻿Ölçüt,Değer
+Görüntü sayısı,20000
+Accuracy %,"99,635"
+FAKE precision %,"99,7893"
+FAKE recall %,"99,480"
+FAKE F1 %,"99,6344"
+ROC-AUC,0.99992647
+Yanlış REAL→FAKE / adet,21
+Yanlış FAKE→REAL / adet,52

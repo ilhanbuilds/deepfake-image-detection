@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="tr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Deepfake Analiz</title><link rel="stylesheet" href="app.css"><script src="app.js" defer></script></head>
+<body>
+<div class="app">
+  <header><div class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7v5c0 5 9 9 9 9s9-4 9-9V7Z"/><path d="m8 12 3 3 5-6"/></svg><h1>Deepfake Analiz</h1></div><button id="about" class="quiet" aria-label="Model bilgisi">Model bilgisi <span aria-hidden="true">↗</span></button></header>
+  <main class="workspace">
+    <section class="file-panel" aria-label="Dosya">
+      <div class="file-toolbar"><span id="file-name">Dosya</span><div id="file-actions" hidden><button id="change" class="quiet">Değiştir</button><button id="remove" class="icon" title="Dosyayı kaldır" aria-label="Dosyayı kaldır">×</button></div></div>
+      <div id="dropzone" class="preview" tabindex="0" role="button" aria-label="Dosya seç veya buraya bırak">
+        <div id="drop-hint"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 22v4h20v-4M16 23V6m-6 6 6-6 6 6"/></svg><span class="choose-label">Dosya seç</span><span class="hint">veya buraya bırak</span><span class="formats">JPG, PNG · MP4, MOV, M4V, WebM</span></div>
+        <img id="photo-preview" alt="Seçilen fotoğraf" hidden><video id="video-preview" controls playsinline preload="metadata" hidden></video>
+      </div>
+      <div class="file-bottom"><span id="file-meta" class="muted">Fotoğraf ≤10 MB · Video ≤100 MB / 60 sn</span><button id="analyze" class="primary" disabled>Analiz et <span aria-hidden="true">→</span></button></div>
+      <input id="file-input" type="file" accept=".jpg,.jpeg,.png,.mp4,.m4v,.mov,.webm" hidden>
+    </section>
+    <section class="result-panel" aria-labelledby="result-heading">
+      <h2 id="result-heading">Sonuç</h2>
+      <div id="empty-result"><span class="empty-mark" aria-hidden="true">—</span></div>
+      <div id="working" hidden role="status" aria-live="polite"><span class="busy-ring" aria-hidden="true"></span><h3 id="progress-title">Analiz ediliyor</h3><p id="progress-message"></p><progress id="progress" max="1"></progress><button id="cancel" class="quiet">İptal et</button></div>
+      <div id="result" hidden><div class="verdict" id="verdict"></div><div class="score-row"><span>FAKE skoru</span><strong id="score"></strong></div><div class="score-track" aria-hidden="true"><i id="score-fill"></i><b></b></div><div class="facts"><div><span>Model</span><strong id="model"></strong></div><div><span>Süre</span><strong id="duration"></strong></div></div><p id="video-summary" class="muted" hidden></p><p class="caution">Model tahminidir. Skor, kesinlik olasılığı değildir.</p><button id="details" class="detail-button">Detaylar <span aria-hidden="true">↗</span></button></div>
+      <p id="error" role="alert" hidden></p><p id="warnings" class="muted" hidden></p>
+    </section>
+  </main>
+</div>
+<dialog id="modal" aria-labelledby="modal-title"><div class="modal-head"><h2 id="modal-title">Detaylar</h2><button id="close-modal" class="icon" aria-label="Kapat">×</button></div><div id="modal-body"></div></dialog>
+</body></html>

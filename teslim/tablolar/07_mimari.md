@@ -1,0 +1,14 @@
+# Final uygulamadaki iki ayrı analiz hattı
+
+|Özellik|Fotoğraf|Video|
+|---|---|---|
+|Model|V3 Robust / B0|SBI / B4 epoch 6|
+|Girdi|RGB 224×224|Yüz RGB 380×380|
+|Ölçekleme|ImageNet mean/std|FP32 / 255|
+|Birim|Tek görüntü|Adaptif 6→12 kare|
+|Karar eşiği|0,5|0,5|
+|Açıklama|Grad-CAM|Kare ve yüz ayrıntıları|
+
+Not: Skorlar kalibre edilmiş kesinlik olasılığı değildir. SBI fotoğraf araştırması Studio hattına eklenmemiştir.
+
+Kaynak: `scripts/demo_worker.py`; `src/video_adaptive.py`

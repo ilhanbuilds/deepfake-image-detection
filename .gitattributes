@@ -1,0 +1,2 @@
+# Preserve delivery bytes, including CSV line endings, for SHA256SUMS.txt.
+teslim/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
