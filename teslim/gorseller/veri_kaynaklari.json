@@ -1,0 +1,16 @@
+{
+  "outputs/metrics/final_test_metrics.json": "503a90d99a87f68f3dda05c01e1450e939a5da886546404b7a408c25242e371f",
+  "outputs/metrics/final_test_metrics_v2.json": "8a6d01a198a4bd0ca8f5c7448483fd5d56d5c5d4ad73b38467853e19e9c4f8d0",
+  "outputs/metrics/final_test_metrics_v3.json": "fcb03f7404f591a8a051107ef235e6549045dd890e2685d5c6cb38ea656f49f8",
+  "outputs/metrics/robustness_v2.json": "82ec937dade493a064442f4d317a218728ff369d1898031a64d120047a2aa29a",
+  "outputs/metrics/robustness_v3.json": "4a85d6baec9701de8515bccd043080d1dbc877b3c3fed41c33c87e92ba6688da",
+  "outputs/video_holdout_v1/final_test_20261018/final_results.json": "8f443470e1b3c260d6e08a8ca7bc497ed743bb7b318cfb365df69aedfff64f76",
+  "outputs/image_v5_final_pilot_v1/comparison.json": "c7d039572064494f608558618a7dcdb01be63753d0ed2b1962af6a4ce4afa20e",
+  "outputs/real_photo_research_v1/external_hf_v1/comparison.json": "a8c8b8dfd51103b0c779d8baf1fec0daf034b4970204dc3a390a47b95f616f73",
+  "outputs/video_research_v1/finetune12/main_20261014/config.json": "5ff9cdb7e95d6cb60cd571afd7355974306b982f58a85a11f78d0c8d853b64fe",
+  "outputs/video_identity_v1/manifest.json": "5beebd11c9b176120a7c65b2d76784733db9f5227f0a563b68c5b060ec9cf39a",
+  "outputs/video_identity_v1/cache_audit.json": "1b9b73a3db96a0755209bd0e8eea4e0677fd61b36e8b9a65b609e5b1d1eab4f1",
+  "src/video_sbi12.py": "145aac69755865b186f6c6e41c7b2792063d4fe2c4cdea2dc0107e6c67d8f1cd",
+  "outputs/video_research_v1/roster_audit.json": "f0be449c52aeced721051b1b203034466062e89bb7753bf23af7af1abebd4864",
+  "src/video_forensic.py": "54b0990ec9d91de372c338a141090be7a085f0065588f6bbe35768e3b81a804d"
+}

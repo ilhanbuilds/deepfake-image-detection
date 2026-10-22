@@ -1,0 +1,16 @@
+# V2 ve V3 dayanıklılık karşılaştırması
+
+|Bozulma|V2 accuracy %|V3 accuracy %|
+|---|---|---|
+|CLEAN|99,410|99,635|
+|JPEG_Q70|85,690|99,220|
+|JPEG_Q50|76,340|98,525|
+|BLUR_SIGMA1|50,955|98,885|
+|BLUR_SIGMA2|50,005|91,030|
+|NOISE_STD0.01|94,895|99,430|
+|NOISE_STD0.03|75,455|97,850|
+|RESIZE_112|50,185|98,230|
+
+Not: Aynı tarihsel test üzerinde bozulma koşullarıdır; salt augmentation etkisini izole eden ablation değildir.
+
+Kaynak: `outputs/metrics/robustness_v2.json`; `outputs/metrics/robustness_v3.json`

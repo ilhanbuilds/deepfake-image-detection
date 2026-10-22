@@ -1,0 +1,7 @@
+﻿Kaynak / birim,REAL,FAKE,Toplam
+V1 görüntü,5890,7000,12890
+140K eğitim / görüntü,50000,50000,100000
+140K validation / görüntü,10000,10000,20000
+140K test / görüntü,10000,10000,20000
+Celeb-DF v2 / video,890,5639,6529
+Harici HF / fotoğraf,8,8,16

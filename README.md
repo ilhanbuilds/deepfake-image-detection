@@ -1,5 +1,7 @@
 # Deepfake Analiz
 
+Güncel akademik teslim: [17 sayfalık final raporu, 12 slaytlık sunum ve kaynak tablolar](teslim/README.md). [87 video envanter farkının doğrulanmış açıklaması](teslim/SON_KONTROL_TR.md) aynı pakettedir. Bu paket özel depoda paylaşılır; içerdiği üçüncü taraf yüz görsellerinin kamuya yeniden dağıtım hakkı doğrulanmamıştır. Depoyu veya teslim belgelerini izin incelemesi olmadan kamuya açmayın.
+
 Üniversite Derin Öğrenme dersi kapsamında geliştirilen, yerel çalışan fotoğraf ve video deepfake araştırma uygulaması. Ana Windows arayüzü **Studio** (`scripts/studio_app.py`); fotoğrafta **V3 Robust EfficientNet-B0**, videoda **Celeb-DF üzerinde fine-tune edilmiş SBI EfficientNet-B4 epoch 6** kullanır.
 
 **Model skoru, kalibre edilmiş kesinlik olasılığı değildir.** Sistem bütün AI düzenlemelerini tespit etmez. Yüksek tarihsel test başarısı, yeni kaynaktan gelen bir fotoğrafın güvenilir biçimde sınıflandırılacağını garanti etmez. Özellikle aşağıdaki harici face-swap deneyinde iki model de sekiz sahtenin tamamını kaçırmıştır.
