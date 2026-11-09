@@ -1,46 +1,21 @@
-# Mac'te yerel tarayıcı arayüzü
+# Apple Silicon Mac'te başlatma
 
-Windows `.lnk` ve `.vbs` dosyaları yerine proje kökündeki **Deepfake Analiz Mac.command** dosyasını kullanın. Proje klasörünün tamamı gerekir; başlatıcıyı tek başına başka klasöre taşımayın. Masaüstüne erişim için Finder'da dosyanın bir takma adını (alias) oluşturabilirsiniz.
+[Proje ana sayfasındaki modeller dahil paketi](../README.md) indirip tamamen çıkarın. Yerel ARM64 **Python 3.12** ve ilk kurulum için internet gerekir.
 
-## Bir defalık kurulum
+**Deepfake Analiz Teslim Mac.command** dosyasına çift tıklayın. Başlatıcı ortamı kurar ve Studio'yu tarayıcıda açar. V3 model dosyası bu pakette hazırdır.
 
-Python 3.12 kurulu olmalıdır. Terminal'de proje klasörüne geçip çalıştırın:
-
-```bash
-python3.12 -m venv .venv
-./.venv/bin/python -m pip install -r requirements.txt
-chmod +x "Deepfake Analiz Mac.command"
-```
-
-`.venv` Mac üzerinde oluşturulmalıdır; Windows'taki `.venv` veya `.desktop-venv` klasörlerini kopyalamayın. Tarayıcı sürümü için `requirements-desktop.txt` kurulmaz. Kaynak kod ZIP'i `.command` çalıştırma iznini korur; başka aktarım yöntemlerinde yukarıdaki `chmod` komutu gerekebilir.
-
-Fotoğraf analizi için projenin özgün V3 ağırlığını aynı konuma yerleştirin:
-
-```text
-outputs/checkpoints/best_model_v3_robust.pth
-```
-
-Beklenen SHA-256: `c7e2c8f06a21a88bfed15f0d63d05b7a345dcae25f874cad3136313331c2ca0c`.
-
-Bu dosya kaynak kod paketinde bulunmaz; yetkili proje yedeğinden ayrıca gerekir. Yerine farklı bir ağırlık koymayın. Dataset indirmek veya yeniden eğitim yapmak gerekmez.
-
-## Başlatma ve durdurma
-
-**Deepfake Analiz Mac.command** dosyasına çift tıklayın. Terminal'de Studio sunucusu başlar ve varsayılan tarayıcıda masaüstü uygulamasıyla aynı arayüz açılır. Adres `http://127.0.0.1:8502/<oturum>/` biçimindedir; tarayıcı otomatik açılmazsa Terminal'de yazılan tam adresi açın. Terminal penceresini açık tutun; durdurmak için **Control+C** kullanın. Tarayıcı sekmesini kapatmak sunucuyu durdurmaz.
-
-Finder başlatmayı engellerse proje klasöründeki Terminal'den çalıştırabilirsiniz:
+Finder çalıştırma izni vermezse paket klasöründeki Terminal'de:
 
 ```bash
-bash "Deepfake Analiz Mac.command"
+bash "Deepfake Analiz Teslim Mac.command"
 ```
 
-8502 portu kullanımdaysa başlatıcı hata verir; mevcut uygulamanın sürecini kapatmaz. Önce önceki Deepfake Terminal oturumunu Control+C ile durdurun.
+Çift tıklama için izin vermek isterseniz:
 
-## Destek kapsamı
+```bash
+chmod +x "Deepfake Analiz Teslim Mac.command"
+```
 
-- Fotoğraf V3 ve Grad-CAM mevcut CPU yolunu kullanır. İlk model yükleme ve analiz Windows GPU kullanımından daha uzun sürebilir.
-- Mevcut SBI video analizi CUDA destekli NVIDIA GPU gerektirir; bu akış Mac üzerinde desteklenmez. Mac'in Apple GPU'suna veya CPU'ya otomatik video geçişi yapılmaz.
-- Tarayıcı ve Windows Studio aynı HTML/CSS/JavaScript arayüzünü ve Studio analiz sunucusunu kullanır. Model, preprocessing ve karar eşikleri korunmuştur.
-- Başlatıcı yerel bilgisayara bağlanır; internet üzerinde yayın yapmaz.
+Terminal'i açık tutun; Control+C ile durdurun. Masaüstüne erişim için Finder'da başlatıcının bir takma adını (alias) oluşturabilirsiniz. Başlatıcıyı paket klasöründen taşımayın; Windows sanal ortamını Mac'e kopyalamayın.
 
-Bu değişiklik gerçek Mac donanımında henüz doğrulanmamıştır; Mac'teki kurulum ve ilk fotoğraf analizi ayrıca kontrol edilmelidir.
+Mac'te fotoğraf ve Grad-CAM CPU yolunu kullanır; mevcut CUDA video akışı desteklenmez. Gerçek Mac donanımında doğrulama henüz yapılmadı.
