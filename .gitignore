@@ -35,3 +35,6 @@ outputs/**
 docs/*.pdf
 *.log
 *.tmp
+# Delivery archives are distributed as release assets, outside Git history.
+Deepfake_*.zip
+UBYS_*.zip

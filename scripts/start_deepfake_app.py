@@ -1,12 +1,15 @@
-"""Launch the separate Turkish UI without changing existing Streamlit settings."""
+"""Open the desktop Studio interface in the default browser."""
 
 from pathlib import Path
+import os
 import subprocess
 
 
 def main():
     root = Path(__file__).resolve().parents[1]
-    python = root / ".venv/Scripts/python.exe"
+    python = (
+        root / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    )
     if not python.is_file():
         raise SystemExit("Ana Python ortamı bulunamadı: .venv")
     try:
@@ -15,17 +18,7 @@ def main():
                 str(python),
                 "-B",
                 "-m",
-                "streamlit",
-                "run",
-                str(root / "app_unified.py"),
-                "--server.port",
-                "8502",
-                "--server.address",
-                "127.0.0.1",
-                "--server.maxUploadSize",
-                "100",
-                "--browser.gatherUsageStats",
-                "false",
+                "src.studio_browser",
             ],
             cwd=root,
             check=False,

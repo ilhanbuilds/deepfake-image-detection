@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import queue
 import subprocess
+import sys
 import tempfile
 import threading
 from time import monotonic
@@ -16,8 +17,9 @@ from time import monotonic
 from src.demo_media import DemoError, validate_upload
 
 ROOT = Path(__file__).resolve().parents[1]
-PHOTO_PYTHON = ROOT / ".venv/Scripts/python.exe"
-VIDEO_PYTHON = ROOT / "outputs/video_research_v1/env/Scripts/python.exe"
+_PYTHON_PATH = "Scripts/python.exe" if os.name == "nt" else "bin/python"
+PHOTO_PYTHON = ROOT / ".venv" / _PYTHON_PATH
+VIDEO_PYTHON = ROOT / "outputs/video_research_v1/env" / _PYTHON_PATH
 _LOCK = threading.Lock()
 
 
@@ -85,6 +87,10 @@ def _stop(process):
 
 
 def _run_worker(mode, directory, on_event, timeout):
+    if mode == "video" and sys.platform == "darwin":
+        raise DemoError(
+            "Mac'te mevcut video modeli çalıştırılamıyor; video analizi CUDA destekli NVIDIA GPU gerektiriyor. Fotoğraf analizini kullanabilirsiniz."
+        )
     executable = PHOTO_PYTHON if mode == "photo" else VIDEO_PYTHON
     if not executable.is_file():
         raise DemoError(

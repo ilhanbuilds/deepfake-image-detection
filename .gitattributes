@@ -1,2 +1,13 @@
 # Preserve delivery bytes, including CSV line endings, for SHA256SUMS.txt.
 teslim/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+*.command text eol=lf
+# Preserve the exact source bytes checked by the saved video-model config.
+src/video_forensic.py -text
+src/video_forensic_train.py -text
+src/video_cache.py -text
+src/train.py -text
+src/video_evaluate.py -text
+src/video_sbi12.py -text
+src/video_frame_study.py -text
+src/video_spatial_evaluate.py -text
+src/video_train.py -text

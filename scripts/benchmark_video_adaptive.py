@@ -10,6 +10,7 @@ import numpy as np
 import torch
 
 from src.dataset import seed_everything
+from src.runtime_provenance import verify_implementations
 from src.video_adaptive import (
     CHECKPOINT,
     CHECKPOINT_SHA,
@@ -68,14 +69,10 @@ def load_engine():
     if file_sha256(CHECKPOINT) != CHECKPOINT_SHA:
         raise ValueError("Only the verified epoch-6 checkpoint is permitted.")
     config = read_json(RUN / "config.json")
-    if (
-        config["frames"] != 12
-        or config["threshold"] != 0.5
-        or any(
-            file_sha256(Path(p)) != sha
-            for p, sha in config["implementation_sha256"].items()
-        )
-    ):
+    verify_implementations(
+        config["implementation_sha256"], Path(__file__).resolve().parents[1]
+    )
+    if config["frames"] != 12 or config["threshold"] != 0.5:
         raise ValueError("Training/preprocessing provenance changed.")
     if not torch.cuda.is_available():
         raise RuntimeError("This real-inference prototype requires CUDA.")

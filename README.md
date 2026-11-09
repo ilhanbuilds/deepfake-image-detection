@@ -1,5 +1,13 @@
 # Deepfake Analiz
 
+## Güncel uygulama teslimi ve UBYS
+
+[9 Kasım 2026 teslim sürümü](https://github.com/ilhanbuilds/deepfake-image-detection/releases/tag/teslim-2026-11-09) iki ayrı dosya içerir: **UBYS_Kaynak_Kod.zip**, 100 MB sınırına uygun kaynak kod teslimidir; **Deepfake_Analiz_Modeller_Dahil.zip**, V3, SBI ve RetinaFace modellerini de içeren yaklaşık 291 MiB kurulum paketidir. Rapor ve sunum ayrı teslim edilir. Kaynak ZIP'i veya GitHub'ın otomatik **Source code** arşivi model içermez; analiz için modeller dahil paketi indirin.
+
+Modeller dahil ZIP'i tamamen çıkarın. Python 3.12 kurulu olmalıdır; ilk kurulumda internet gerekir. Windows/CUDA için **Deepfake Analiz Windows.cmd**, yalnız fotoğraf için **Windows Fotograf CPU.cmd**, Apple Silicon Mac'te yerel ARM64 Python ile fotoğraf için **Deepfake Analiz Teslim Mac.command** kullanılır. Mac video analizi desteklenmez. Tarayıcı ve masaüstü aynı Studio arayüzünü kullanır. Farklı yerel klasörde fotoğraf, CPU Grad-CAM ve CUDA video smoke kontrolleri geçti; gerçek Mac ve temiz bilgisayarda sıfırdan internet kurulumu henüz doğrulanmadı.
+
+Depo private olduğundan release dosyalarını yalnız erişim verilen GitHub hesapları indirebilir. Linke sahip olmak tek başına erişim vermez. [UBYS teslim ve erişim açıklaması](docs/TESLIM_UBYS.md).
+
 Güncel akademik teslim: [17 sayfalık final raporu, 12 slaytlık sunum ve kaynak tablolar](teslim/README.md). [87 video envanter farkının doğrulanmış açıklaması](teslim/SON_KONTROL_TR.md) aynı pakettedir. Bu paket özel depoda paylaşılır; içerdiği üçüncü taraf yüz görsellerinin kamuya yeniden dağıtım hakkı doğrulanmamıştır. Depoyu veya teslim belgelerini izin incelemesi olmadan kamuya açmayın.
 
 Üniversite Derin Öğrenme dersi kapsamında geliştirilen, yerel çalışan fotoğraf ve video deepfake araştırma uygulaması. Ana Windows arayüzü **Studio** (`scripts/studio_app.py`); fotoğrafta **V3 Robust EfficientNet-B0**, videoda **Celeb-DF üzerinde fine-tune edilmiş SBI EfficientNet-B4 epoch 6** kullanır.
@@ -42,6 +50,8 @@ Bozuk içerik, desteklenmeyen codec, CUDA/model doğrulama hatası, yüz bulunam
 Yüklemeler özel OS geçici klasörlerinde işlenir. Normal bitiş, hata, timeout ve kapanışta yalnız kayıtlı uygulama geçicileri temizlenir; bağlantı hedefleri izlenmez. Sert sistem kapanışı artık bırakabilir; şifreli saklama veya adli güvenli silme iddiası yoktur. Oturum logları `outputs/desktop_studio_sessions/<oturum>/` altındadır ve Git dışındadır. Her iş ayrı model sürecidir; modeller GPU'da aynı anda tutulmaz. Model yükleme gecikmesi toplam süreye dahildir. GPU kilidi oturumlar arasında da eşzamanlı analizi engeller.
 
 ## İki ayrı analiz hattı
+
+Mac'te yerel tarayıcı arayüzü için proje kökündeki **Deepfake Analiz Mac.command** dosyasını kullanın. Bir defalık ortam kurulumu ve gereken V3 ağırlığı [Mac kurulum kılavuzunda](docs/MACOS.md) açıklanır. Fotoğraf analizi CPU kullanabilir; mevcut CUDA video hattı Mac'te desteklenmez.
 
 ### Fotoğraf: V3 Robust
 
@@ -207,7 +217,7 @@ $bridgePath = 'outputs/video_research_v1/env/Lib/site-packages/project_runtime.p
 
 Klon sonrası bu dosyalar yoksa analiz çalışmaz. Fine-tune checkpointlerini GitHub'dan otomatik temin eden genel indirme URL'si yoktur; proje sahibinin uygun yetkili yedeği gerekir. Upstream kaynak/revizyon/hash listesi `scripts/setup_video_forensic.py` içindedir; script kurulum/indirmeyi yalnız açık bayrakla yapar. Günlük başlatma eğitim, veri indirme veya resmî test başlatmaz.
 
-**Taşınabilirlik sınırı:** Eğitim config'inin `implementation_sha256` alanı mevcut `C:\Users\kilic\Desktop\deepfake-image-detection\src\video_forensic_train.py` mutlak yolunu ve kaynak baytlarını doğrular. Başka kökte veya farklı satır sonlarıyla restore kontrolü durabilir. Mevcut mühür/config/kod değiştirilerek bypass yapılmamalı; farklı köke taşıma ayrı denetlenen çalışma ister. Bu görev aynı yerel kökteki akışı korur. Git yedeği büyük bilimsel dosyaların fiziksel bağımsız yedeği değildir.
+**Taşınabilirlik doğrulaması:** Eğitim config'inin `implementation_sha256` alanındaki tarihsel Windows yolları, `src/runtime_provenance.py` tarafından mevcut proje kökündeki dokuz bilinen kaynak kimliğine eşlenir. Özgün SHA-256 değerlerinin tamamı doğrulanır; config, model ve preprocessing değiştirilmez. İlgili kaynakların satır sonları `.gitattributes` ile korunur. Farklı klasörde gerçek fotoğraf ve CUDA video smoke kontrolü aynı skorları üretti. Bu, gerçek Mac veya farklı donanımda kabul testi değildir. Git yedeği büyük bilimsel dosyaların fiziksel bağımsız yedeği değildir.
 
 ## Kod haritası ve korunan araştırma arşivi
 
@@ -230,13 +240,13 @@ outputs/                       Yerel bilimsel arşiv, ortamlar, ağırlıklar; G
 data/                          Datasetler; Git dışı
 ```
 
-Eski `app.py` decoder'ı `src/demo_media.py` üzerinden Studio'da hâlâ kullanılır. `src/desktop_runtime.py` Studio'nun sahipli geçici dosya temizliğini sağlar. `app_unified.py`, `scripts/desktop_app.py`, `src/desktop_server.py` eski arayüzler ve yaşam döngüsü testleri/restore için korunmuştur. Bunlar güncel Studio giriş noktası değildir. Geriye uyumlu tarayıcı alternatifi:
+Eski `app.py` decoder'ı `src/demo_media.py` üzerinden Studio'da hâlâ kullanılır. `src/desktop_runtime.py` Studio'nun sahipli geçici dosya temizliğini sağlar. `app_unified.py`, `scripts/desktop_app.py`, `src/desktop_server.py` eski arayüzler ve yaşam döngüsü testleri/restore için korunmuştur. Bunlar güncel Studio giriş noktası değildir. Masaüstüyle aynı Studio arayüzünü tarayıcıda açmak için:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/start_deepfake_app.py
 ```
 
-Yalnız127.0.0.1:8502; eski fotoğraf demosu `app.py` ise Streamlit ile8501'de açılır. Bu alternatifler aynı modelleri kullanır. Bilimsel scriptlerin import ve sabit hash bağımlılıkları nedeniyle geniş taşıma/yeniden adlandırma yapılmamıştır. `docs/EXPERIMENTS.md` bazı değerlendirme/eğitim scriptlerinin günlük hedefidir; silinmez.
+Studio tarayıcı sunucusu yalnız `127.0.0.1:8502` üzerinde çalışır; oturuma özel tam adres Terminal'de yazılır ve varsayılan tarayıcıda açılır. Masaüstüyle aynı `assets/studio/` dosyaları ve `src/studio_server.py` analiz akışı kullanılır. Terminal'de Control+C ile durdurulur. Port doluysa başka uygulamaya müdahale edilmez; boş port için `.\.venv\Scripts\python.exe -B -m src.studio_browser --port 0` kullanılabilir. Eski Streamlit arayüzü gerektiğinde `python -m streamlit run app_unified.py` ile ayrıca açılabilir. Bilimsel scriptlerin import ve sabit hash bağımlılıkları nedeniyle geniş taşıma/yeniden adlandırma yapılmamıştır. `docs/EXPERIMENTS.md` bazı değerlendirme/eğitim scriptlerinin günlük hedefidir; silinmez.
 
 Güncel kurulum/kullanım/restore açıklamaları bu README'de birleştirilmiştir. `docs/` geçmiş aşamaların kaydıdır; “henüz çalışmadı” ifadeleri yazıldıkları aşamayı anlatır. Önemli kayıtlar:
 

@@ -10,7 +10,7 @@ from PIL import Image
 import pytest
 
 from src.demo_media import DemoError
-from src.studio_server import create_server, detect_media
+from src.studio_server import ASSETS, create_server, detect_media
 
 
 def photo(format="PNG"):
@@ -73,6 +73,14 @@ def test_loopback_static_assets_and_no_path_traversal(server):
     with pytest.raises(urllib.error.HTTPError) as exc:
         query(server, "../../app.py")
     assert exc.value.code == 404
+
+
+@pytest.mark.parametrize(
+    "route,file", [("", "index.html"), ("app.css", "app.css"), ("app.js", "app.js")]
+)
+def test_browser_serves_exact_desktop_studio_assets(server, route, file):
+    with query(server, route) as response:
+        assert response.read() == (ASSETS / file).read_bytes()
 
 
 @pytest.mark.parametrize("origin,token", [(False, True), (True, False), (False, False)])

@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import queue
 import secrets
+import signal
 import subprocess
 import sys
 import tempfile
@@ -83,6 +84,10 @@ class Studio:
             self.media, self.contents = {}, None
         try:
             mode = detect_media(contents, name)
+            if mode == "video" and os.environ.get("DEEPFAKE_PHOTO_ONLY") == "1":
+                raise DemoError(
+                    "Bu oturum yalnız fotoğraf analizi içindir. Video analizi Windows'ta CUDA destekli NVIDIA GPU ve video ortamı gerektirir."
+                )
             if mode == "photo":
                 from src.demo_media import photo_image
 
@@ -215,6 +220,10 @@ class Studio:
                 )
 
     def run_worker(self, mode, directory, timeout):
+        if mode == "video" and sys.platform == "darwin":
+            raise DemoError(
+                "Mac'te mevcut video modeli çalıştırılamıyor; video analizi CUDA destekli NVIDIA GPU gerektiriyor. Fotoğraf analizini kullanabilirsiniz."
+            )
         executable = PHOTO_PYTHON if mode == "photo" else VIDEO_PYTHON
         if not executable.is_file():
             raise DemoError("Modelin Python ortamı bulunamadı.")
@@ -251,6 +260,7 @@ class Studio:
                     encoding="utf-8",
                     errors="replace",
                     creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
+                    start_new_session=os.name != "nt",
                 )
                 with (self.session / "owned_workers.jsonl").open(
                     "a", encoding="utf-8"
@@ -312,9 +322,29 @@ class Studio:
                     process.stdout.close()
 
 
+class _PosixWorkerJob:
+    """Own only the dedicated process group created for this analysis worker."""
+
+    def __init__(self):
+        self.group = None
+
+    def assign(self, process):
+        if os.getpgid(process.pid) != process.pid:
+            raise OSError("Analiz süreci bağımsız bir süreç grubu oluşturmadı.")
+        self.group = process.pid
+
+    def close(self):
+        group, self.group = self.group, None
+        if group is not None:
+            try:
+                os.killpg(group, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+
+
 @contextmanager
 def _worker_job():
-    job = WindowsJob()
+    job = WindowsJob() if os.name == "nt" else _PosixWorkerJob()
     try:
         yield job
     finally:
