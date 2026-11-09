@@ -1,21 +1,5 @@
 # Deepfake Analiz
 
-## Güncel uygulama teslimi ve UBYS
-
-[9 Kasım 2026 teslim sürümü](https://github.com/ilhanbuilds/deepfake-image-detection/releases/tag/teslim-2026-11-09) iki ayrı dosya içerir: **UBYS_Kaynak_Kod.zip**, 100 MB sınırına uygun kaynak kod teslimidir; **Deepfake_Analiz_Modeller_Dahil.zip**, V3, SBI ve RetinaFace modellerini de içeren yaklaşık 291 MiB kurulum paketidir. Rapor ve sunum ayrı teslim edilir. Kaynak ZIP'i veya GitHub'ın otomatik **Source code** arşivi model içermez; analiz için modeller dahil paketi indirin.
-
-Modeller dahil ZIP'i tamamen çıkarın. Python 3.12 kurulu olmalıdır; ilk kurulumda internet gerekir. Windows/CUDA için **Deepfake Analiz Windows.cmd**, yalnız fotoğraf için **Windows Fotograf CPU.cmd**, Apple Silicon Mac'te yerel ARM64 Python ile fotoğraf için **Deepfake Analiz Teslim Mac.command** kullanılır. Mac video analizi desteklenmez. Tarayıcı ve masaüstü aynı Studio arayüzünü kullanır. Farklı yerel klasörde fotoğraf, CPU Grad-CAM ve CUDA video smoke kontrolleri geçti; gerçek Mac ve temiz bilgisayarda sıfırdan internet kurulumu henüz doğrulanmadı.
-
-Depo private olduğundan release dosyalarını yalnız erişim verilen GitHub hesapları indirebilir. Linke sahip olmak tek başına erişim vermez. [UBYS teslim ve erişim açıklaması](docs/TESLIM_UBYS.md).
-
-Güncel akademik teslim: [17 sayfalık final raporu, 12 slaytlık sunum ve kaynak tablolar](teslim/README.md). [87 video envanter farkının doğrulanmış açıklaması](teslim/SON_KONTROL_TR.md) aynı pakettedir. Bu paket özel depoda paylaşılır; içerdiği üçüncü taraf yüz görsellerinin kamuya yeniden dağıtım hakkı doğrulanmamıştır. Depoyu veya teslim belgelerini izin incelemesi olmadan kamuya açmayın.
-
-Üniversite Derin Öğrenme dersi kapsamında geliştirilen, yerel çalışan fotoğraf ve video deepfake araştırma uygulaması. Ana Windows arayüzü **Studio** (`scripts/studio_app.py`); fotoğrafta **V3 Robust EfficientNet-B0**, videoda **Celeb-DF üzerinde fine-tune edilmiş SBI EfficientNet-B4 epoch 6** kullanır.
-
-**Model skoru, kalibre edilmiş kesinlik olasılığı değildir.** Sistem bütün AI düzenlemelerini tespit etmez. Yüksek tarihsel test başarısı, yeni kaynaktan gelen bir fotoğrafın güvenilir biçimde sınıflandırılacağını garanti etmez. Özellikle aşağıdaki harici face-swap deneyinde iki model de sekiz sahtenin tamamını kaçırmıştır.
-
-> Bu GitHub deposu kaynak kodu deposudur; model, dataset veya deney arşivi değildir. Yalnız klonlamak tam analiz için yeterli olmaz. Ağırlıklar, provenance dosyaları ve ayrı çalışma ortamları ayrıca gerekir. Veri ve ağırlıkların yeniden dağıtım izni varsayılmaz.
-
 ## Windows Studio: başlatma ve kullanım
 
 Yerel modeller ve üç ortam hazırsa proje kökünde:
